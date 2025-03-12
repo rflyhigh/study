@@ -66,7 +66,7 @@ async function loadUserData() {
         
         // If we don't have complete user data, fetch it
         if (!userData.name || !userData.email) {
-            const response = await fetch('https://study-o5hp.onrender.com/users/me', {
+            const response = await fetch('https://api.studyboard.stmy.me/users/me', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -145,7 +145,7 @@ async function loadGoals() {
         });
         
         // Fetch subjects for the filter and form
-        const subjectsResponse = await fetch('https://study-o5hp.onrender.com/subjects', {
+        const subjectsResponse = await fetch('https://api.studyboard.stmy.me/subjects', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -186,7 +186,7 @@ async function loadGoals() {
         });
         
         // Fetch all goals
-        const goalsResponse = await fetch('https://study-o5hp.onrender.com/goals', {
+        const goalsResponse = await fetch('https://api.studyboard.stmy.me/goals', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -573,7 +573,7 @@ function filterGoals() {
     } else {
         // Fallback to fetching subjects again if needed
         const token = localStorage.getItem('accessToken');
-        fetch('https://study-o5hp.onrender.com/subjects', {
+        fetch('https://api.studyboard.stmy.me/subjects', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -654,7 +654,7 @@ function openEditGoalModal(goalId) {
     document.body.classList.add('modal-open');
     
     // Fetch goal details
-    fetch(`https://study-o5hp.onrender.com/goals/${goalId}`, {
+    fetch(`https://api.studyboard.stmy.me/goals/${goalId}`, {
         headers: {
             'Authorization': `Bearer ${token}`
         }
@@ -848,7 +848,7 @@ async function handleGoalFormSubmit(e) {
         
         if (isEdit) {
             // Update existing goal
-            response = await fetch(`https://study-o5hp.onrender.com/goals/${goalId}`, {
+            response = await fetch(`https://api.studyboard.stmy.me/goals/${goalId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -858,7 +858,7 @@ async function handleGoalFormSubmit(e) {
             });
         } else {
             // Create new goal
-            response = await fetch('https://study-o5hp.onrender.com/goals', {
+            response = await fetch('https://api.studyboard.stmy.me/goals', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -935,7 +935,7 @@ async function updateMilestone(goalId, milestoneIndex, completed) {
         
         if (!goal) {
             // Fetch current goal data if not in local data
-            const response = await fetch(`https://study-o5hp.onrender.com/goals/${goalId}`, {
+            const response = await fetch(`https://api.studyboard.stmy.me/goals/${goalId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -966,7 +966,7 @@ async function updateMilestone(goalId, milestoneIndex, completed) {
         const progress = totalMilestones > 0 ? Math.round((completedMilestones / totalMilestones) * 100) : 0;
         
         // Update goal
-        const updateResponse = await fetch(`https://study-o5hp.onrender.com/goals/${goalId}`, {
+        const updateResponse = await fetch(`https://api.studyboard.stmy.me/goals/${goalId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -1038,7 +1038,7 @@ async function markGoalComplete(goalId) {
             button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Completing...';
         });
         
-        const response = await fetch(`https://study-o5hp.onrender.com/goals/${goalId}`, {
+        const response = await fetch(`https://api.studyboard.stmy.me/goals/${goalId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -1106,7 +1106,7 @@ async function deleteGoal() {
     deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
     
     try {
-        const response = await fetch(`https://study-o5hp.onrender.com/goals/${goalId}`, {
+        const response = await fetch(`https://api.studyboard.stmy.me/goals/${goalId}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`
