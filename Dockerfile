@@ -7,5 +7,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# Use CMD with proper shell form to ensure variable expansion
-CMD uvicorn main:app --host 0.0.0.0 --port $(PORT:-8000)
+CMD ["python", "start.py"]
