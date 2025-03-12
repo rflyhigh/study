@@ -69,7 +69,7 @@ async function loadUserData() {
         
         // If we don't have complete user data, fetch it
         if (!userData.name || !userData.email) {
-            const response = await fetch('https://study-o5hp.onrender.com/users/me', {
+            const response = await fetch('https://api.studyboard.stmy.me/users/me', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -222,7 +222,7 @@ async function loadStatistics() {
         const { startDate, endDate } = window.currentDateRange;
         
         // Fetch statistics from backend API
-        const statsUrl = `https://study-o5hp.onrender.com/statistics?start_date=${startDate.toISOString()}&end_date=${endDate.toISOString()}`;
+        const statsUrl = `https://api.studyboard.stmy.me/statistics?start_date=${startDate.toISOString()}&end_date=${endDate.toISOString()}`;
         
         const statsResponse = await fetch(statsUrl, {
             headers: {
@@ -280,7 +280,7 @@ async function loadStatistics() {
 // Fetch study sessions for the given date range
 async function fetchStudySessions(token, startDate, endDate) {
     try {
-        const response = await fetch(`https://study-o5hp.onrender.com/study-sessions?scheduled_after=${startDate.toISOString()}&scheduled_before=${endDate.toISOString()}`, {
+        const response = await fetch(`https://api.studyboard.stmy.me/study-sessions?scheduled_after=${startDate.toISOString()}&scheduled_before=${endDate.toISOString()}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -300,7 +300,7 @@ async function fetchStudySessions(token, startDate, endDate) {
 // Fetch goals for the given date range
 async function fetchGoals(token, startDate, endDate) {
     try {
-        const response = await fetch(`https://study-o5hp.onrender.com/goals`, {
+        const response = await fetch(`https://api.studyboard.stmy.me/goals`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -326,7 +326,7 @@ async function fetchGoals(token, startDate, endDate) {
 // Fetch events for the given date range
 async function fetchEvents(token, startDate, endDate) {
     try {
-        const response = await fetch(`https://study-o5hp.onrender.com/events?start_after=${startDate.toISOString()}&start_before=${endDate.toISOString()}`, {
+        const response = await fetch(`https://api.studyboard.stmy.me/events?start_after=${startDate.toISOString()}&start_before=${endDate.toISOString()}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -797,7 +797,7 @@ async function handleExport() {
         
         if (exportAssignments) {
             fetchPromises.push(
-                fetch(`https://study-o5hp.onrender.com/assignments?due_after=${startDate.toISOString()}&due_before=${endDate.toISOString()}`, {
+                fetch(`https://api.studyboard.stmy.me/assignments?due_after=${startDate.toISOString()}&due_before=${endDate.toISOString()}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 }).then(res => res.json()).then(data => { exportData.assignments = data; })
             );
@@ -805,7 +805,7 @@ async function handleExport() {
         
         if (exportEvents) {
             fetchPromises.push(
-                fetch(`https://study-o5hp.onrender.com/events?start_after=${startDate.toISOString()}&start_before=${endDate.toISOString()}`, {
+                fetch(`https://api.studyboard.stmy.me/events?start_after=${startDate.toISOString()}&start_before=${endDate.toISOString()}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 }).then(res => res.json()).then(data => { exportData.events = data; })
             );
@@ -813,7 +813,7 @@ async function handleExport() {
         
         if (exportStudySessions) {
             fetchPromises.push(
-                fetch(`https://study-o5hp.onrender.com/study-sessions?scheduled_after=${startDate.toISOString()}&scheduled_before=${endDate.toISOString()}`, {
+                fetch(`https://api.studyboard.stmy.me/study-sessions?scheduled_after=${startDate.toISOString()}&scheduled_before=${endDate.toISOString()}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 }).then(res => res.json()).then(data => { exportData.study_sessions = data; })
             );
@@ -821,7 +821,7 @@ async function handleExport() {
         
         if (exportGoals) {
             fetchPromises.push(
-                fetch(`https://study-o5hp.onrender.com/goals`, {
+                fetch(`https://api.studyboard.stmy.me/goals`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 }).then(res => res.json()).then(data => { 
                     // Filter goals within date range
@@ -854,7 +854,7 @@ async function handleExport() {
             // Create a form to submit to a PDF generation service
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = 'https://study-o5hp.onrender.com/export/pdf';
+            form.action = 'https://api.studyboard.stmy.me/export/pdf';
             form.target = '_blank';
             
             // Add the data as a hidden field
