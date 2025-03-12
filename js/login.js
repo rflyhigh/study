@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
                 
                 // Make API request
-                const response = await fetch('https://study-o5hp.onrender.com/token', {
+                const response = await fetch('https://api.studyboard.stmy.me/token', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 // Fetch user data
-                const userResponse = await fetch('https://study-o5hp.onrender.com/users/me', {
+                const userResponse = await fetch('https://api.studyboard.stmy.me/users/me', {
                     headers: {
                         'Authorization': `Bearer ${data.access_token}`
                     }
