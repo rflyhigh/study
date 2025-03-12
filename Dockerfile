@@ -7,8 +7,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# Make port configurable via environment variable with default
+# Set a default port if not provided
 ENV PORT=8000
-EXPOSE ${PORT}
 
-CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT}"]
+# Use CMD with shell form to ensure variable expansion
+CMD uvicorn main:app --host 0.0.0.0 --port $PORT
