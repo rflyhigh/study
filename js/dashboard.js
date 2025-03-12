@@ -70,7 +70,7 @@ async function loadUserData() {
         
         // If we don't have complete user data, fetch it
         if (!userData.name || !userData.email || !userData.timezone) {
-            const response = await fetch('https://study-o5hp.onrender.com/users/me', {
+            const response = await fetch('https://api.studyboard.stmy.me/users/me', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -106,7 +106,7 @@ async function loadUserData() {
 async function fetchTimezones() {
     try {
         const token = localStorage.getItem('accessToken');
-        const response = await fetch('https://study-o5hp.onrender.com/timezones', {
+        const response = await fetch('https://api.studyboard.stmy.me/timezones', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -179,7 +179,7 @@ async function handleProfileUpdate(e) {
             timezone: timezoneSelect.value
         };
         
-        const response = await fetch('https://study-o5hp.onrender.com/users/me', {
+        const response = await fetch('https://api.studyboard.stmy.me/users/me', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -293,7 +293,7 @@ async function loadDashboardData() {
         });
         
         // Fetch statistics
-        const statsResponse = await fetch('https://study-o5hp.onrender.com/statistics', {
+        const statsResponse = await fetch('https://api.studyboard.stmy.me/statistics', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -322,7 +322,7 @@ async function loadDashboardData() {
         renderStudyTimeChart(statsData.daily_study_data);
         
         // Fetch upcoming assignments
-        const assignmentsResponse = await fetch('https://study-o5hp.onrender.com/assignments?status=pending&limit=5', {
+        const assignmentsResponse = await fetch('https://api.studyboard.stmy.me/assignments?status=pending&limit=5', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -338,7 +338,7 @@ async function loadDashboardData() {
         displayUpcomingAssignments(assignments);
         
         // Fetch upcoming events
-        const eventsResponse = await fetch('https://study-o5hp.onrender.com/events?limit=5&start_after=' + new Date().toISOString(), {
+        const eventsResponse = await fetch('https://api.studyboard.stmy.me/events?limit=5&start_after=' + new Date().toISOString(), {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -354,7 +354,7 @@ async function loadDashboardData() {
         displayUpcomingEvents(events);
         
         // Fetch recent materials
-        const materialsResponse = await fetch('https://study-o5hp.onrender.com/materials?limit=5', {
+        const materialsResponse = await fetch('https://api.studyboard.stmy.me/materials?limit=5', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -523,7 +523,7 @@ function displayRecentMaterials(materials) {
                     ${formatDate(uploadDate)}
                 </p>
             </div>
-            <a href="https://study-o5hp.onrender.com/materials/download/${material._id}?token=${localStorage.getItem('accessToken')}" 
+            <a href="https://api.studyboard.stmy.me/materials/download/${material._id}?token=${localStorage.getItem('accessToken')}" 
                class="material-download" target="_blank">
                 <i class="fas fa-download"></i>
             </a>
