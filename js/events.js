@@ -75,7 +75,7 @@ async function loadUserData() {
         
         // If we don't have complete user data, fetch it
         if (!userData.name || !userData.email) {
-            const response = await fetch('https://study-o5hp.onrender.com/users/me', {
+            const response = await fetch('https://api.studyboard.stmy.me/users/me', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -222,7 +222,7 @@ async function loadEvents() {
         });
         
         // Fetch subjects for the filter and form
-        const subjectsResponse = await fetch('https://study-o5hp.onrender.com/subjects', {
+        const subjectsResponse = await fetch('https://api.studyboard.stmy.me/subjects', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -263,7 +263,7 @@ async function loadEvents() {
         });
         
         // Fetch all events
-        const eventsResponse = await fetch('https://study-o5hp.onrender.com/events', {
+        const eventsResponse = await fetch('https://api.studyboard.stmy.me/events', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -508,7 +508,7 @@ function filterEvents() {
     
     // Fetch subjects for display
     const token = localStorage.getItem('accessToken');
-    fetch('https://study-o5hp.onrender.com/subjects', {
+    fetch('https://api.studyboard.stmy.me/subjects', {
         headers: {
             'Authorization': `Bearer ${token}`
         }
@@ -573,7 +573,7 @@ function openEditEventModal(eventId) {
     const token = localStorage.getItem('accessToken');
     
     // Fetch event details
-    fetch(`https://study-o5hp.onrender.com/events/${eventId}`, {
+    fetch(`https://api.studyboard.stmy.me/events/${eventId}`, {
         headers: {
             'Authorization': `Bearer ${token}`
         }
@@ -659,7 +659,7 @@ async function handleEventFormSubmit(e) {
         
         if (isEdit) {
             // Update existing event
-            response = await fetch(`https://study-o5hp.onrender.com/events/${eventId}`, {
+            response = await fetch(`https://api.studyboard.stmy.me/events/${eventId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -669,7 +669,7 @@ async function handleEventFormSubmit(e) {
             });
         } else {
             // Create new event
-            response = await fetch('https://study-o5hp.onrender.com/events', {
+            response = await fetch('https://api.studyboard.stmy.me/events', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -707,7 +707,7 @@ async function handleEventFormSubmit(e) {
         closeModals();
         
         // Update the UI with current data
-        const subjectsResponse = await fetch('https://study-o5hp.onrender.com/subjects', {
+        const subjectsResponse = await fetch('https://api.studyboard.stmy.me/subjects', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -755,7 +755,7 @@ async function deleteEvent() {
         deleteBtn.disabled = true;
         deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
         
-        const response = await fetch(`https://study-o5hp.onrender.com/events/${eventId}`, {
+        const response = await fetch(`https://api.studyboard.stmy.me/events/${eventId}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -784,7 +784,7 @@ async function deleteEvent() {
         closeModals();
         
         // Update the UI with current data
-        const subjectsResponse = await fetch('https://study-o5hp.onrender.com/subjects', {
+        const subjectsResponse = await fetch('https://api.studyboard.stmy.me/subjects', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
