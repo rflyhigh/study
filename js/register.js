@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
                 
                 // Make API request
-                const response = await fetch('https://study-o5hp.onrender.com/register', {
+                const response = await fetch('https://api.studyboard.stmy.me/register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
