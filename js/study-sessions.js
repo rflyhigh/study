@@ -102,7 +102,7 @@ async function loadUserData() {
         
         // If we don't have complete user data, fetch it
         if (!userData.name || !userData.email) {
-            const response = await fetch('https://study-o5hp.onrender.com/users/me', {
+            const response = await fetch('https://api.studyboard.stmy.me/users/me', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -246,7 +246,7 @@ async function loadStudySessions() {
         });
         
         // Fetch subjects for the filter and form
-        const subjectsResponse = await fetch('https://study-o5hp.onrender.com/subjects', {
+        const subjectsResponse = await fetch('https://api.studyboard.stmy.me/subjects', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -296,7 +296,7 @@ async function loadStudySessions() {
         window.subjectsMap = subjectsMap;
         
         // Fetch all study sessions
-        const sessionsResponse = await fetch('https://study-o5hp.onrender.com/study-sessions', {
+        const sessionsResponse = await fetch('https://api.studyboard.stmy.me/study-sessions', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -652,7 +652,7 @@ function openEditSessionModal(sessionId) {
     document.body.classList.add('modal-open');
     
     // Fetch session details
-    fetch(`https://study-o5hp.onrender.com/study-sessions/${sessionId}`, {
+    fetch(`https://api.studyboard.stmy.me/study-sessions/${sessionId}`, {
         headers: {
             'Authorization': `Bearer ${token}`
         }
@@ -726,7 +726,7 @@ function openTimerOverlay(sessionId) {
     document.getElementById('timer-overlay').classList.add('active');
     document.body.classList.add('overlay-open');
     
-    fetch(`https://study-o5hp.onrender.com/study-sessions/${sessionId}`, {
+    fetch(`https://api.studyboard.stmy.me/study-sessions/${sessionId}`, {
         headers: {
             'Authorization': `Bearer ${token}`
         }
@@ -1119,7 +1119,7 @@ function completeSession() {
     }
     
     // Update session
-    fetch(`https://study-o5hp.onrender.com/study-sessions/${session._id}`, {
+    fetch(`https://api.studyboard.stmy.me/study-sessions/${session._id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -1230,7 +1230,7 @@ async function handleSessionFormSubmit(e) {
         
         if (isEdit) {
             // Update existing session
-            response = await fetch(`https://study-o5hp.onrender.com/study-sessions/${sessionId}`, {
+            response = await fetch(`https://api.studyboard.stmy.me/study-sessions/${sessionId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1240,7 +1240,7 @@ async function handleSessionFormSubmit(e) {
             });
         } else {
             // Create new session
-            response = await fetch('https://study-o5hp.onrender.com/study-sessions', {
+            response = await fetch('https://api.studyboard.stmy.me/study-sessions', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1319,7 +1319,7 @@ async function deleteSession() {
     deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
     
     try {
-        const response = await fetch(`https://study-o5hp.onrender.com/study-sessions/${sessionId}`, {
+        const response = await fetch(`https://api.studyboard.stmy.me/study-sessions/${sessionId}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`
