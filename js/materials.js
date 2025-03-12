@@ -66,7 +66,7 @@ async function loadUserData() {
         
         // If we don't have complete user data, fetch it
         if (!userData.name || !userData.email) {
-            const response = await fetch('https://study-o5hp.onrender.com/users/me', {
+            const response = await fetch('https://api.studyboard.stmy.me/users/me', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -256,7 +256,7 @@ async function loadMaterials() {
         });
         
         // Fetch subjects for the filter and form
-        const subjectsResponse = await fetch('https://study-o5hp.onrender.com/subjects', {
+        const subjectsResponse = await fetch('https://api.studyboard.stmy.me/subjects', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -308,7 +308,7 @@ async function loadMaterials() {
         });
         
         // Fetch all materials
-        const materialsResponse = await fetch('https://study-o5hp.onrender.com/materials', {
+        const materialsResponse = await fetch('https://api.studyboard.stmy.me/materials', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -614,7 +614,7 @@ function filterMaterials() {
     } else {
         // Fallback to fetching subjects again if needed
         const token = localStorage.getItem('accessToken');
-        fetch('https://study-o5hp.onrender.com/subjects', {
+        fetch('https://api.studyboard.stmy.me/subjects', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -684,7 +684,7 @@ function openMaterialDetailsModal(materialId) {
     document.body.classList.add('modal-open');
     
     // Fetch material details
-    fetch(`https://study-o5hp.onrender.com/materials/${materialId}`, {
+    fetch(`https://api.studyboard.stmy.me/materials/${materialId}`, {
         headers: {
             'Authorization': `Bearer ${token}`
         }
@@ -702,7 +702,7 @@ function openMaterialDetailsModal(materialId) {
             populateMaterialDetails(material, subject);
         } else {
             // Fetch subject info if needed
-            return fetch('https://study-o5hp.onrender.com/subjects', {
+            return fetch('https://api.studyboard.stmy.me/subjects', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -768,7 +768,7 @@ function openEditMaterialModal(materialId) {
     document.body.classList.add('modal-open');
     
     // Fetch material details
-    fetch(`https://study-o5hp.onrender.com/materials/${materialId}`, {
+    fetch(`https://api.studyboard.stmy.me/materials/${materialId}`, {
         headers: {
             'Authorization': `Bearer ${token}`
         }
@@ -895,7 +895,7 @@ async function handleUploadFormSubmit(e) {
         }, 200);
         
         // Upload file
-        const response = await fetch('https://study-o5hp.onrender.com/materials', {
+        const response = await fetch('https://api.studyboard.stmy.me/materials', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -991,7 +991,7 @@ async function handleEditMaterialFormSubmit(e) {
     saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
     
     try {
-        const response = await fetch(`https://study-o5hp.onrender.com/materials/${materialId}`, {
+        const response = await fetch(`https://api.studyboard.stmy.me/materials/${materialId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -1054,7 +1054,7 @@ async function deleteMaterial() {
     deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
     
     try {
-        const response = await fetch(`https://study-o5hp.onrender.com/materials/${materialId}`, {
+        const response = await fetch(`https://api.studyboard.stmy.me/materials/${materialId}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -1136,7 +1136,7 @@ async function downloadMaterial(materialId, filePath) {
         }, 10);
 
         // Create download URL
-        const downloadUrl = `https://study-o5hp.onrender.com/materials/download/${materialId}?token=${token}`;
+        const downloadUrl = `https://api.studyboard.stmy.me/materials/download/${materialId}?token=${token}`;
         
         // Create a temporary anchor element to trigger the download
         const a = document.createElement('a');
