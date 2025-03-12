@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 resendBtn.disabled = true;
                 resendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
                 
-                const response = await fetch('https://study-o5hp.onrender.com/resend-verification', {
+                const response = await fetch('https://api.studyboard.stmy.me/resend-verification', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
