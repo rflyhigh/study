@@ -72,7 +72,7 @@ async function loadUserData() {
         
         // If we don't have complete user data, fetch it
         if (!userData.name || !userData.email) {
-            const response = await fetch('https://study-o5hp.onrender.com/users/me', {
+            const response = await fetch('https://api.studyboard.stmy.me/users/me', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -159,7 +159,7 @@ async function loadNotes() {
         });
         
         // Fetch subjects for the filter and form
-        const subjectsResponse = await fetch('https://study-o5hp.onrender.com/subjects', {
+        const subjectsResponse = await fetch('https://api.studyboard.stmy.me/subjects', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -199,7 +199,7 @@ async function loadNotes() {
         });
         
         // Fetch all notes
-        const notesResponse = await fetch('https://study-o5hp.onrender.com/notes', {
+        const notesResponse = await fetch('https://api.studyboard.stmy.me/notes', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -466,7 +466,7 @@ function filterNotesByTag(tag) {
     // Filter notes
     const token = localStorage.getItem('accessToken');
     
-    fetch('https://study-o5hp.onrender.com/notes?tag=' + encodeURIComponent(tag), {
+    fetch('https://api.studyboard.stmy.me/notes?tag=' + encodeURIComponent(tag), {
         headers: {
             'Authorization': `Bearer ${token}`
         }
@@ -548,7 +548,7 @@ function filterNotes(keepTagFilter = false) {
     
     // Fetch subjects for display
     const token = localStorage.getItem('accessToken');
-    fetch('https://study-o5hp.onrender.com/subjects', {
+    fetch('https://api.studyboard.stmy.me/subjects', {
         headers: {
             'Authorization': `Bearer ${token}`
         }
@@ -594,7 +594,7 @@ function openEditNoteModal(noteId) {
         populateEditForm(note);
     } else {
         // Fetch note details from API if not found locally
-        fetch(`https://study-o5hp.onrender.com/notes/${noteId}`, {
+        fetch(`https://api.studyboard.stmy.me/notes/${noteId}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -639,7 +639,7 @@ function openNoteViewModal(noteId) {
         displayNoteInViewModal(note);
     } else {
         // Fetch note details from API if not found locally
-        fetch(`https://study-o5hp.onrender.com/notes/${noteId}`, {
+        fetch(`https://api.studyboard.stmy.me/notes/${noteId}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -660,7 +660,7 @@ function displayNoteInViewModal(note) {
     const token = localStorage.getItem('accessToken');
     
     // Fetch subject info
-    fetch('https://study-o5hp.onrender.com/subjects', {
+    fetch('https://api.studyboard.stmy.me/subjects', {
         headers: {
             'Authorization': `Bearer ${token}`
         }
@@ -786,7 +786,7 @@ async function handleNoteFormSubmit(e) {
         
         if (isEdit) {
             // Update existing note
-            response = await fetch(`https://study-o5hp.onrender.com/notes/${noteId}`, {
+            response = await fetch(`https://api.studyboard.stmy.me/notes/${noteId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -796,7 +796,7 @@ async function handleNoteFormSubmit(e) {
             });
         } else {
             // Create new note
-            response = await fetch('https://study-o5hp.onrender.com/notes', {
+            response = await fetch('https://api.studyboard.stmy.me/notes', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -869,7 +869,7 @@ async function deleteNote() {
         deleteBtn.disabled = true;
         deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
         
-        const response = await fetch(`https://study-o5hp.onrender.com/notes/${noteId}`, {
+        const response = await fetch(`https://api.studyboard.stmy.me/notes/${noteId}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`
