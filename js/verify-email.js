@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitResendBtn.disabled = true;
                 submitResendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
                 
-                const response = await fetch('https://study-o5hp.onrender.com/resend-verification', {
+                const response = await fetch('https://api.studyboard.stmy.me/resend-verification', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     async function verifyToken(token) {
         try {
-            const response = await fetch('https://study-o5hp.onrender.com/verify-email', {
+            const response = await fetch('https://api.studyboard.stmy.me/verify-email', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
