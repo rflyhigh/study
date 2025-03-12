@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
                 
                 // Make API request
-                const response = await fetch('https://study-o5hp.onrender.com/forgot-password', {
+                const response = await fetch('https://api.studyboard.stmy.me/forgot-password', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
