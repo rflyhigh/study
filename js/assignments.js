@@ -72,7 +72,7 @@ async function loadUserData() {
         
         // If we don't have complete user data, fetch it
         if (!userData.name || !userData.email) {
-            const response = await fetch('https://study-o5hp.onrender.com/users/me', {
+            const response = await fetch('https://api.studyboard.stmy.me/users/me', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -165,7 +165,7 @@ async function createShareableLink() {
         shareBtn.disabled = true;
         shareBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating link...';
         
-        const response = await fetch('https://study-o5hp.onrender.com/assignments/share', {
+        const response = await fetch('https://api.studyboard.stmy.me/assignments/share', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -230,7 +230,7 @@ async function loadAssignments() {
         });
         
         // Fetch subjects for the filter and form
-        const subjectsResponse = await fetch('https://study-o5hp.onrender.com/subjects', {
+        const subjectsResponse = await fetch('https://api.studyboard.stmy.me/subjects', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -271,7 +271,7 @@ async function loadAssignments() {
         });
         
         // Fetch all assignments
-        const assignmentsResponse = await fetch('https://study-o5hp.onrender.com/assignments', {
+        const assignmentsResponse = await fetch('https://api.studyboard.stmy.me/assignments', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -510,7 +510,7 @@ function filterAssignments() {
     
     // Fetch subjects for display
     const token = localStorage.getItem('accessToken');
-    fetch('https://study-o5hp.onrender.com/subjects', {
+    fetch('https://api.studyboard.stmy.me/subjects', {
         headers: {
             'Authorization': `Bearer ${token}`
         }
@@ -556,7 +556,7 @@ function openEditAssignmentModal(assignmentId) {
     const token = localStorage.getItem('accessToken');
     
     // Fetch assignment details
-    fetch(`https://study-o5hp.onrender.com/assignments/${assignmentId}`, {
+    fetch(`https://api.studyboard.stmy.me/assignments/${assignmentId}`, {
         headers: {
             'Authorization': `Bearer ${token}`
         }
@@ -640,7 +640,7 @@ async function handleAssignmentFormSubmit(e) {
         
         if (isEdit) {
             // Update existing assignment
-            response = await fetch(`https://study-o5hp.onrender.com/assignments/${assignmentId}`, {
+            response = await fetch(`https://api.studyboard.stmy.me/assignments/${assignmentId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -650,7 +650,7 @@ async function handleAssignmentFormSubmit(e) {
             });
         } else {
             // Create new assignment
-            response = await fetch('https://study-o5hp.onrender.com/assignments', {
+            response = await fetch('https://api.studyboard.stmy.me/assignments', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -688,7 +688,7 @@ async function handleAssignmentFormSubmit(e) {
         closeModals();
         
         // Refresh the display without full reload
-        const subjectsResponse = await fetch('https://study-o5hp.onrender.com/subjects', {
+        const subjectsResponse = await fetch('https://api.studyboard.stmy.me/subjects', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -734,7 +734,7 @@ async function deleteAssignment() {
         deleteBtn.disabled = true;
         deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
         
-        const response = await fetch(`https://study-o5hp.onrender.com/assignments/${assignmentId}`, {
+        const response = await fetch(`https://api.studyboard.stmy.me/assignments/${assignmentId}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -755,7 +755,7 @@ async function deleteAssignment() {
         closeModals();
         
         // Completely refresh the assignments display
-        const subjectsResponse = await fetch('https://study-o5hp.onrender.com/subjects', {
+        const subjectsResponse = await fetch('https://api.studyboard.stmy.me/subjects', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
