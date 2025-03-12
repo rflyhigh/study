@@ -66,7 +66,7 @@ async function loadUserData() {
         
         // If we don't have complete user data, fetch it
         if (!userData.name || !userData.email) {
-            const response = await fetch('https://study-o5hp.onrender.com/users/me', {
+            const response = await fetch('https://api.studyboard.stmy.me/users/me', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -151,7 +151,7 @@ async function loadSubjects() {
         });
         
         // Fetch all subjects
-        const subjectsResponse = await fetch('https://study-o5hp.onrender.com/subjects', {
+        const subjectsResponse = await fetch('https://api.studyboard.stmy.me/subjects', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -353,7 +353,7 @@ function openEditSubjectModal(subjectId) {
     document.body.classList.add('modal-open');
     
     // Fetch subject details
-    fetch(`https://study-o5hp.onrender.com/subjects/${subjectId}`, {
+    fetch(`https://api.studyboard.stmy.me/subjects/${subjectId}`, {
         headers: {
             'Authorization': `Bearer ${token}`
         }
@@ -462,7 +462,7 @@ async function handleSubjectFormSubmit(e) {
         
         if (isEdit) {
             // Update existing subject
-            response = await fetch(`https://study-o5hp.onrender.com/subjects/${subjectId}`, {
+            response = await fetch(`https://api.studyboard.stmy.me/subjects/${subjectId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -472,7 +472,7 @@ async function handleSubjectFormSubmit(e) {
             });
         } else {
             // Create new subject
-            response = await fetch('https://study-o5hp.onrender.com/subjects', {
+            response = await fetch('https://api.studyboard.stmy.me/subjects', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -535,7 +535,7 @@ async function deleteSubject() {
     deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
     
     try {
-        const response = await fetch(`https://study-o5hp.onrender.com/subjects/${subjectId}`, {
+        const response = await fetch(`https://api.studyboard.stmy.me/subjects/${subjectId}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`
