@@ -308,6 +308,9 @@ async function loadStudySessions() {
         
         const sessions = await sessionsResponse.json();
         
+        // Debug the sessions data
+        console.log('Fetched study sessions:', sessions);
+        
         // Store sessions in a global variable for filtering
         window.allSessions = sessions;
         
@@ -411,6 +414,9 @@ function displaySessions(sessions, subjectsMap) {
             sessionItem.className = `session-item ${isToday ? 'today' : ''}`;
             sessionItem.dataset.id = session._id;
             
+            // Make sure planned_duration is displayed correctly - it's in minutes from the server
+            const plannedDuration = session.planned_duration || 25; // Default to 25 if not set
+            
             sessionItem.innerHTML = `
                 <div class="session-header">
                     <div class="session-subject" style="background-color: ${subject.color}">
@@ -437,7 +443,7 @@ function displaySessions(sessions, subjectsMap) {
                     </div>
                     <div class="session-duration">
                         <i class="fas fa-hourglass-half"></i>
-                        <span>Planned: ${session.planned_duration} minutes</span>
+                        <span>Planned: ${plannedDuration} minutes</span>
                     </div>
                     ${session.description ? `
                     <div class="session-description">
@@ -472,6 +478,10 @@ function displaySessions(sessions, subjectsMap) {
             const scheduledDate = new Date(session.scheduled_date);
             const completedDate = session.completed_at ? new Date(session.completed_at) : null;
             
+            // Make sure planned_duration and actual_duration are displayed correctly - they're in minutes from the server
+            const plannedDuration = session.planned_duration || 25; // Default to 25 if not set
+            const actualDuration = session.actual_duration || 0;
+            
             const sessionItem = document.createElement('div');
             sessionItem.className = `session-item ${session.completed ? 'completed' : 'missed'}`;
             sessionItem.dataset.id = session._id;
@@ -497,10 +507,10 @@ function displaySessions(sessions, subjectsMap) {
                     </div>
                     <div class="session-duration">
                         <i class="fas fa-hourglass-half"></i>
-                        <span>Planned: ${session.planned_duration} minutes</span>
+                        <span>Planned: ${plannedDuration} minutes</span>
                         ${session.actual_duration ? `
                         <i class="fas fa-check-circle"></i>
-                        <span>Actual: ${session.actual_duration} minutes</span>
+                        <span>Actual: ${actualDuration} minutes</span>
                         ` : ''}
                     </div>
                     ${session.description ? `
@@ -628,6 +638,9 @@ function openAddSessionModal() {
     defaultDate.setHours(defaultDate.getHours() + 1);
     document.getElementById('scheduled-date').value = formatDateTimeForInput(defaultDate);
     
+    // Set default planned duration to 25 minutes
+    document.getElementById('planned-duration').value = 25;
+    
     // Update modal title
     document.getElementById('modal-title').textContent = 'Plan Study Session';
     document.getElementById('save-btn').textContent = 'Save Session';
@@ -664,6 +677,9 @@ function openEditSessionModal(sessionId) {
         return response.json();
     })
     .then(session => {
+        // Log session data for debugging
+        console.log('Session data for editing:', session);
+        
         // Populate form
         document.getElementById('session-id').value = session._id;
         document.getElementById('subject-id').value = session.subject_id;
@@ -672,7 +688,8 @@ function openEditSessionModal(sessionId) {
         const scheduledDate = new Date(session.scheduled_date);
         document.getElementById('scheduled-date').value = formatDateTimeForInput(scheduledDate);
         
-        document.getElementById('planned-duration').value = session.planned_duration;
+        // Make sure planned_duration is correctly handled - it's in minutes from the server
+        document.getElementById('planned-duration').value = session.planned_duration || 25;
         document.getElementById('description').value = session.description || '';
         document.getElementById('use-pomodoro').checked = session.use_pomodoro;
         
@@ -738,6 +755,9 @@ function openTimerOverlay(sessionId) {
         return response.json();
     })
     .then(session => {
+        // Log session data for debugging
+        console.log('Session data for timer:', session);
+        
         // Store session data
         window.currentSession = session;
         
@@ -776,6 +796,9 @@ function openQuickSessionModal() {
     const now = new Date();
     document.getElementById('scheduled-date').value = formatDateTimeForInput(now);
     
+    // Set default planned duration to 25 minutes
+    document.getElementById('planned-duration').value = 25;
+    
     // Focus on the subject dropdown
     setTimeout(() => {
         try {
@@ -805,20 +828,12 @@ function setupTimer(session) {
     document.getElementById('pomodoro-toggle').checked = session.use_pomodoro;
     document.getElementById('pomodoro-options').style.display = session.use_pomodoro ? 'block' : 'none';
     
-    // Set pomodoro values
+    // Set pomodoro values - ensure we use the correct values from the session
     document.getElementById('work-time').value = session.pomodoro_work || 25;
     document.getElementById('break-time').value = session.pomodoro_break || 5;
     
     // Initialize timer
     resetTimer();
-    
-    // Initialize elapsed time
-    window.elapsedSeconds = 0;
-    if (window.elapsedInterval) {
-        clearInterval(window.elapsedInterval);
-    }
-    window.elapsedInterval = null;
-    document.getElementById('elapsed-time').textContent = '00:00:00';
     
     // Initialize elapsed time
     window.elapsedSeconds = 0;
@@ -863,7 +878,7 @@ function closeTimerOverlay() {
     const shouldAskToSave = window.elapsedSeconds > 0 && 
                            window.currentSession && 
                            !window.currentSession.completed &&
-                           !window.hasAskedToSave; // New flag to prevent multiple prompts
+                           !window.hasAskedToSave; // Flag to prevent multiple prompts
     
     // Set flag to prevent multiple prompts
     window.hasAskedToSave = true;
@@ -1112,11 +1127,14 @@ function completeSession() {
     
     // Add actual duration if we have elapsed time
     if (window.elapsedSeconds) {
-        updateData.actual_duration = Math.max(1, Math.ceil(window.elapsedSeconds / 60)); // At least 1 minute
+        // Convert seconds to minutes and ensure at least 1 minute
+        updateData.actual_duration = Math.max(1, Math.ceil(window.elapsedSeconds / 60));
     } else {
         // If no elapsed time, use planned duration
         updateData.actual_duration = session.planned_duration;
     }
+    
+    console.log("Completing session with data:", updateData);
     
     // Update session
     fetch(`https://api.studyboard.stmy.me/study-sessions/${session._id}`, {
@@ -1136,6 +1154,8 @@ function completeSession() {
         return response.json();
     })
     .then(updatedSession => {
+        console.log("Session completed successfully:", updatedSession);
+        
         // Update the session in our local data
         if (window.allSessions) {
             window.allSessions = window.allSessions.map(s => 
@@ -1165,7 +1185,7 @@ function completeSession() {
         
         // Reset button state
         completeBtn.disabled = false;
-        completeBtn.textContent = 'Complete Session';
+        completeBtn.innerHTML = 'Complete Session';
     });
 }
 
@@ -1189,10 +1209,21 @@ async function handleSessionFormSubmit(e) {
     // Get form data
     const formData = {
         subject_id: document.getElementById('subject-id').value,
-        planned_duration: parseInt(document.getElementById('planned-duration').value) || 60,
+        planned_duration: parseInt(document.getElementById('planned-duration').value) || 25, // Default to 25 if not provided
         description: document.getElementById('description').value || '',
         use_pomodoro: document.getElementById('use-pomodoro').checked
     };
+    
+    // Validate form inputs
+    if (!formData.subject_id || formData.subject_id === "select") {
+        alert('Please select a subject');
+        return;
+    }
+    
+    if (formData.planned_duration <= 0) {
+        alert('Planned duration must be greater than 0 minutes');
+        return;
+    }
     
     // Handle the scheduled date with proper timezone awareness
     const scheduledDateInput = document.getElementById('scheduled-date').value;
@@ -1211,6 +1242,12 @@ async function handleSessionFormSubmit(e) {
     if (formData.use_pomodoro) {
         formData.pomodoro_work = parseInt(document.getElementById('pomodoro-work').value) || 25;
         formData.pomodoro_break = parseInt(document.getElementById('pomodoro-break').value) || 5;
+        
+        // Validate pomodoro values
+        if (formData.pomodoro_work < 1 || formData.pomodoro_break < 1) {
+            alert('Pomodoro work and break times must be at least 1 minute');
+            return;
+        }
     } else {
         // Set default values when not using pomodoro
         formData.pomodoro_work = 25;
