@@ -247,13 +247,37 @@ function initEventListeners() {
     document.getElementById('reset-timer-btn').addEventListener('click', resetTimer);
     document.getElementById('complete-session-btn').addEventListener('click', completeSession);
     
-    // Pomodoro toggle in timer
+    // Pomodoro toggle in timer - FIXED
     document.getElementById('pomodoro-toggle').addEventListener('change', function() {
         const pomodoroOptions = document.getElementById('pomodoro-options');
-        pomodoroOptions.style.display = this.checked ? 'block' : 'none';
+        const isPomodoroMode = this.checked;
+        
+        pomodoroOptions.style.display = isPomodoroMode ? 'block' : 'none';
         
         // Reset timer when changing mode
-        resetTimer();
+        if (window.currentSession) {
+            if (!isPomodoroMode) {
+                // When turning pomodoro OFF, use the session's planned duration
+                const plannedDuration = window.currentSession.planned_duration || 25;
+                
+                // Update timer state
+                window.timerState = {
+                    isBreak: false,
+                    timeLeft: plannedDuration * 60,
+                    totalTime: plannedDuration * 60
+                };
+                
+                console.log(`Switching to regular timer with ${plannedDuration} minutes`);
+                
+                // Update display
+                updateTimerDisplay();
+            } else {
+                // When turning pomodoro ON, use the work time
+                resetTimer();
+            }
+        } else {
+            resetTimer();
+        }
     });
     
     // Timer options change
@@ -843,7 +867,7 @@ function openQuickSessionModal() {
     }, 100);
 }
 
-// Setup timer with session data
+// Setup timer with session data - FIXED
 function setupTimer(session) {
     const subject = window.subjectsMap[session.subject_id] || { name: 'Study Session', color: '#4287f5' };
     
@@ -852,16 +876,31 @@ function setupTimer(session) {
     subjectElement.querySelector('.subject-name').textContent = subject.name;
     subjectElement.querySelector('.subject-color').style.backgroundColor = subject.color;
     
-    // Set pomodoro toggle
+    // Set pomodoro toggle - IMPORTANT: this must be before setting timer state
     document.getElementById('pomodoro-toggle').checked = session.use_pomodoro;
     document.getElementById('pomodoro-options').style.display = session.use_pomodoro ? 'block' : 'none';
     
-    // Set pomodoro values - ensure we use the correct values from the session
+    // Set pomodoro values
     document.getElementById('work-time').value = session.pomodoro_work || 25;
     document.getElementById('break-time').value = session.pomodoro_break || 5;
     
-    // Initialize timer
-    resetTimer();
+    // IMPORTANT: Use the session's planned duration for the timer if not using pomodoro
+    if (!session.use_pomodoro) {
+        // Initialize timer with the planned duration
+        window.timerState = {
+            isBreak: false,
+            timeLeft: session.planned_duration * 60, // Convert minutes to seconds
+            totalTime: session.planned_duration * 60
+        };
+        
+        console.log(`Setting timer to planned duration: ${session.planned_duration} minutes`);
+        
+        // Update display immediately
+        updateTimerDisplay();
+    } else {
+        // For pomodoro mode, use work time
+        resetTimer();
+    }
     
     // Initialize elapsed time
     window.elapsedSeconds = 0;
@@ -1039,7 +1078,7 @@ function pauseTimer() {
     document.getElementById('pause-timer-btn').disabled = true;
 }
 
-// Reset timer
+// Reset timer - FIXED
 function resetTimer() {
     // Stop timer
     if (window.timerInterval) {
@@ -1047,16 +1086,30 @@ function resetTimer() {
         window.timerInterval = null;
     }
     
-    // Get timer values
     const isPomodoroMode = document.getElementById('pomodoro-toggle').checked;
-    const workMinutes = parseInt(document.getElementById('work-time').value) || 25;
     
-    // Reset timer state
-    window.timerState = {
-        isBreak: false,
-        timeLeft: workMinutes * 60,
-        totalTime: workMinutes * 60
-    };
+    // IMPORTANT: Use the session's planned duration when not in pomodoro mode
+    if (!isPomodoroMode && window.currentSession) {
+        // Use planned duration from the current session
+        const plannedDuration = window.currentSession.planned_duration || 25;
+        
+        window.timerState = {
+            isBreak: false,
+            timeLeft: plannedDuration * 60, // Convert minutes to seconds
+            totalTime: plannedDuration * 60
+        };
+        
+        console.log(`Reset timer to planned duration: ${plannedDuration} minutes`);
+    } else {
+        // In pomodoro mode, use work time
+        const workMinutes = parseInt(document.getElementById('work-time').value) || 25;
+        
+        window.timerState = {
+            isBreak: false,
+            timeLeft: workMinutes * 60,
+            totalTime: workMinutes * 60
+        };
+    }
     
     // Reset status
     document.getElementById('timer-status').textContent = 'Work Time';
