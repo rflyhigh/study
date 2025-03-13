@@ -34,7 +34,33 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         logout();
     });
+    
+    // Add refresh button to the header
+    const headerActions = document.querySelector('.page-header .header-actions');
+    if (headerActions) {
+        const refreshBtn = document.createElement('button');
+        refreshBtn.className = 'btn btn-outline refresh-btn';
+        refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
+        refreshBtn.addEventListener('click', forceRefreshSessions);
+        headerActions.prepend(refreshBtn);
+    }
 });
+
+// Force refresh of study sessions data
+function forceRefreshSessions() {
+    console.log("Forcing refresh of sessions data...");
+    
+    // Clear cached sessions
+    window.allSessions = null;
+    
+    // Show loading spinners
+    document.querySelectorAll('.loading-spinner').forEach(spinner => {
+        spinner.style.display = 'flex';
+    });
+    
+    // Load fresh data
+    loadStudySessions();
+}
 
 // Show time zone information
 function showTimeZoneInfo() {
@@ -357,8 +383,10 @@ function updateSessionStats(sessions) {
     document.getElementById('completion-rate').textContent = `${completionRate}%`;
 }
 
-// Display sessions
+// Display sessions - FIXED VERSION
 function displaySessions(sessions, subjectsMap) {
+    console.log("Displaying sessions with data:", sessions);
+    
     const upcomingSessionsList = document.getElementById('upcoming-sessions-list');
     const pastSessionsList = document.getElementById('past-sessions-list');
     const noSessions = document.getElementById('no-sessions');
@@ -369,7 +397,7 @@ function displaySessions(sessions, subjectsMap) {
     });
     
     // Check if there are any sessions
-    if (sessions.length === 0) {
+    if (!sessions || sessions.length === 0) {
         upcomingSessionsList.innerHTML = '';
         pastSessionsList.innerHTML = '';
         noSessions.style.display = 'block';
@@ -408,14 +436,14 @@ function displaySessions(sessions, subjectsMap) {
             const isToday = isDateToday(scheduledDate);
             
             // Debug logging to help troubleshoot time issues
-            console.log(`Session time: ${session.scheduled_date}, Local display time: ${scheduledDate}, ${formatTime(scheduledDate)}`);
+            console.log(`Session: ${session._id}, Duration: ${session.planned_duration} minutes`);
             
             const sessionItem = document.createElement('div');
             sessionItem.className = `session-item ${isToday ? 'today' : ''}`;
             sessionItem.dataset.id = session._id;
             
-            // Make sure planned_duration is displayed correctly - it's in minutes from the server
-            const plannedDuration = session.planned_duration || 25; // Default to 25 if not set
+            // IMPORTANT: Explicitly ensure the planned_duration is displayed
+            const plannedDuration = session.planned_duration || 0;
             
             sessionItem.innerHTML = `
                 <div class="session-header">
@@ -443,7 +471,7 @@ function displaySessions(sessions, subjectsMap) {
                     </div>
                     <div class="session-duration">
                         <i class="fas fa-hourglass-half"></i>
-                        <span>Planned: ${plannedDuration} minutes</span>
+                        <span><strong>Planned: ${plannedDuration} minutes</strong></span>
                     </div>
                     ${session.description ? `
                     <div class="session-description">
@@ -463,7 +491,7 @@ function displaySessions(sessions, subjectsMap) {
         });
     }
     
-    // Display past sessions
+    // Display past sessions with similar fixes
     if (pastSessions.length === 0) {
         pastSessionsList.innerHTML = `
             <div class="empty-state">
@@ -478,8 +506,8 @@ function displaySessions(sessions, subjectsMap) {
             const scheduledDate = new Date(session.scheduled_date);
             const completedDate = session.completed_at ? new Date(session.completed_at) : null;
             
-            // Make sure planned_duration and actual_duration are displayed correctly - they're in minutes from the server
-            const plannedDuration = session.planned_duration || 25; // Default to 25 if not set
+            // IMPORTANT: Explicitly ensure the planned_duration and actual_duration are displayed
+            const plannedDuration = session.planned_duration || 0;
             const actualDuration = session.actual_duration || 0;
             
             const sessionItem = document.createElement('div');
@@ -507,10 +535,10 @@ function displaySessions(sessions, subjectsMap) {
                     </div>
                     <div class="session-duration">
                         <i class="fas fa-hourglass-half"></i>
-                        <span>Planned: ${plannedDuration} minutes</span>
+                        <span><strong>Planned: ${plannedDuration} minutes</strong></span>
                         ${session.actual_duration ? `
                         <i class="fas fa-check-circle"></i>
-                        <span>Actual: ${actualDuration} minutes</span>
+                        <span><strong>Actual: ${actualDuration} minutes</strong></span>
                         ` : ''}
                     </div>
                     ${session.description ? `
@@ -650,7 +678,7 @@ function openAddSessionModal() {
     document.body.classList.add('modal-open');
 }
 
-// Open edit session modal
+// Open edit session modal - FIXED VERSION
 function openEditSessionModal(sessionId) {
     if (!sessionId) {
         console.error('No session ID provided for editing');
@@ -688,7 +716,7 @@ function openEditSessionModal(sessionId) {
         const scheduledDate = new Date(session.scheduled_date);
         document.getElementById('scheduled-date').value = formatDateTimeForInput(scheduledDate);
         
-        // Make sure planned_duration is correctly handled - it's in minutes from the server
+        // IMPORTANT: Make sure planned_duration is correctly set from the server value
         document.getElementById('planned-duration').value = session.planned_duration || 25;
         document.getElementById('description').value = session.description || '';
         document.getElementById('use-pomodoro').checked = session.use_pomodoro;
@@ -851,6 +879,7 @@ function setupTimer(session) {
     document.getElementById('start-timer-btn').disabled = false;
     document.getElementById('pause-timer-btn').disabled = true;
     document.getElementById('reset-timer-btn').disabled = true;
+    document.getElementById('complete-session-btn').disabled = false;
     
     // Reset completion flags
     window.isClosingTimer = false;
@@ -1100,8 +1129,10 @@ function playTimerEndSound() {
     }
 }
 
-// Complete session
+// Complete session - FIXED VERSION
 function completeSession() {
+    console.log("Attempting to complete session...");
+    
     // Set flag to prevent completion prompt when closing
     window.hasAskedToSave = true;
     
@@ -1113,6 +1144,8 @@ function completeSession() {
         closeTimerOverlay();
         return;
     }
+    
+    console.log("Current session data:", session);
     
     // Disable the complete button to prevent double submissions
     const completeBtn = document.getElementById('complete-session-btn');
@@ -1131,10 +1164,10 @@ function completeSession() {
         updateData.actual_duration = Math.max(1, Math.ceil(window.elapsedSeconds / 60));
     } else {
         // If no elapsed time, use planned duration
-        updateData.actual_duration = session.planned_duration;
+        updateData.actual_duration = session.planned_duration || 25;
     }
     
-    console.log("Completing session with data:", updateData);
+    console.log("Completing session with data:", JSON.stringify(updateData, null, 2));
     
     // Update session
     fetch(`https://api.studyboard.stmy.me/study-sessions/${session._id}`, {
@@ -1147,34 +1180,29 @@ function completeSession() {
     })
     .then(response => {
         if (!response.ok) {
-            return response.json().then(data => {
-                throw new Error(data.detail || 'Failed to update session');
-            });
+            return response.json()
+                .then(data => {
+                    throw new Error(data.detail || 'Failed to update session');
+                })
+                .catch(e => {
+                    // If JSON parsing fails, use the response status
+                    throw new Error(`Server error (${response.status}): Failed to update session`);
+                });
         }
         return response.json();
     })
     .then(updatedSession => {
         console.log("Session completed successfully:", updatedSession);
         
-        // Update the session in our local data
-        if (window.allSessions) {
-            window.allSessions = window.allSessions.map(s => 
-                s._id === session._id ? updatedSession : s
-            );
-        }
+        // Force reload instead of trying to update cached data
+        window.allSessions = null;
         
         // Close overlay without triggering another completion prompt
         document.getElementById('timer-overlay').classList.remove('active');
         document.body.classList.remove('overlay-open');
         
-        // Update the UI without full reload
-        if (window.subjectsMap) {
-            displaySessions(window.allSessions, window.subjectsMap);
-            updateSessionStats(window.allSessions);
-        } else {
-            // Fallback to full reload
-            loadStudySessions();
-        }
+        // Always do a full reload of sessions to ensure fresh data
+        loadStudySessions();
         
         // Show success message
         alert('Study session completed successfully!');
@@ -1197,31 +1225,41 @@ function closeModals() {
     document.body.classList.remove('modal-open');
 }
 
-// Handle session form submission
+// Handle session form submission - FIXED VERSION
 async function handleSessionFormSubmit(e) {
     e.preventDefault();
-    console.log("Form submitted");
+    
+    // Clear any existing console output to avoid confusion
+    console.clear();
+    console.log("Form submitted - FIXED VERSION");
     
     const token = localStorage.getItem('accessToken');
     const sessionId = document.getElementById('session-id').value;
     const isEdit = sessionId !== '';
     
-    // Get form data
+    // Explicitly parse the planned duration with parseInt
+    const plannedDurationInput = document.getElementById('planned-duration').value;
+    const plannedDuration = parseInt(plannedDurationInput, 10);
+    
+    console.log("Planned duration from form:", plannedDurationInput);
+    console.log("Parsed planned duration:", plannedDuration);
+    
+    if (isNaN(plannedDuration) || plannedDuration <= 0) {
+        alert('Please enter a valid duration (must be a positive number)');
+        return;
+    }
+    
+    // Get form data with explicit duration parsing
     const formData = {
         subject_id: document.getElementById('subject-id').value,
-        planned_duration: parseInt(document.getElementById('planned-duration').value) || 25, // Default to 25 if not provided
+        planned_duration: plannedDuration, // Use the explicitly parsed value
         description: document.getElementById('description').value || '',
         use_pomodoro: document.getElementById('use-pomodoro').checked
     };
     
-    // Validate form inputs
+    // Validate subject
     if (!formData.subject_id || formData.subject_id === "select") {
         alert('Please select a subject');
-        return;
-    }
-    
-    if (formData.planned_duration <= 0) {
-        alert('Planned duration must be greater than 0 minutes');
         return;
     }
     
@@ -1231,8 +1269,6 @@ async function handleSessionFormSubmit(e) {
         // Convert to ISO string but preserve the user's intended local time
         const localDate = new Date(scheduledDateInput);
         formData.scheduled_date = localDate.toISOString();
-        
-        console.log(`Local input time: ${scheduledDateInput}, Sending to server: ${formData.scheduled_date}`);
     } else {
         alert('Please select a scheduled date');
         return;
@@ -1240,14 +1276,8 @@ async function handleSessionFormSubmit(e) {
     
     // Add pomodoro settings if enabled
     if (formData.use_pomodoro) {
-        formData.pomodoro_work = parseInt(document.getElementById('pomodoro-work').value) || 25;
-        formData.pomodoro_break = parseInt(document.getElementById('pomodoro-break').value) || 5;
-        
-        // Validate pomodoro values
-        if (formData.pomodoro_work < 1 || formData.pomodoro_break < 1) {
-            alert('Pomodoro work and break times must be at least 1 minute');
-            return;
-        }
+        formData.pomodoro_work = parseInt(document.getElementById('pomodoro-work').value, 10) || 25;
+        formData.pomodoro_break = parseInt(document.getElementById('pomodoro-break').value, 10) || 5;
     } else {
         // Set default values when not using pomodoro
         formData.pomodoro_work = 25;
@@ -1260,7 +1290,8 @@ async function handleSessionFormSubmit(e) {
     saveBtn.disabled = true;
     saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
     
-    console.log("Sending form data:", formData);
+    // Log the exact data being sent to the server
+    console.log("SENDING DATA TO SERVER:", JSON.stringify(formData, null, 2));
     
     try {
         let response;
@@ -1287,23 +1318,24 @@ async function handleSessionFormSubmit(e) {
             });
         }
         
+        // Check for error responses
         if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            console.error("API error response:", errorData);
-            throw new Error(errorData.detail || 'Failed to save session');
+            let errorDetail = 'Failed to save session';
+            try {
+                const errorData = await response.json();
+                errorDetail = errorData.detail || errorDetail;
+                console.error("API error response:", errorData);
+            } catch (e) {
+                console.error("Error parsing API error:", e);
+            }
+            throw new Error(errorDetail);
         }
         
         const savedSession = await response.json();
         console.log("Session saved successfully:", savedSession);
         
-        // Update our local data
-        if (isEdit && window.allSessions) {
-            window.allSessions = window.allSessions.map(s => 
-                s._id === sessionId ? savedSession : s
-            );
-        } else if (window.allSessions) {
-            window.allSessions.push(savedSession);
-        }
+        // Force reload of sessions from server rather than using cached data
+        window.allSessions = null;
         
         // Close modal
         closeModals();
@@ -1317,14 +1349,8 @@ async function handleSessionFormSubmit(e) {
             window.currentSession = savedSession;
             openTimerOverlay(savedSession._id);
         } else {
-            // Update the UI without full reload
-            if (window.subjectsMap) {
-                displaySessions(window.allSessions, window.subjectsMap);
-                updateSessionStats(window.allSessions);
-            } else {
-                // Fallback to full reload
-                loadStudySessions();
-            }
+            // Always do a full reload to ensure fresh data
+            loadStudySessions();
         }
         
     } catch (error) {
@@ -1368,22 +1394,14 @@ async function deleteSession() {
             throw new Error(errorData.detail || 'Failed to delete session');
         }
         
-        // Update our local data
-        if (window.allSessions) {
-            window.allSessions = window.allSessions.filter(s => s._id !== sessionId);
-        }
+        // Force reload of sessions from server
+        window.allSessions = null;
         
         // Close modal
         closeModals();
         
-        // Update the UI without full reload
-        if (window.subjectsMap) {
-            displaySessions(window.allSessions, window.subjectsMap);
-            updateSessionStats(window.allSessions);
-        } else {
-            // Fallback to full reload
-            loadStudySessions();
-        }
+        // Always do a full reload to ensure fresh data
+        loadStudySessions();
         
     } catch (error) {
         console.error('Error deleting session:', error);
